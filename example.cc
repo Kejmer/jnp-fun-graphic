@@ -12,9 +12,9 @@ main()
 {
   const uint32_t width = 400;
   const uint32_t height = 300;
-  // const Region rc = circle(Point(50., 100.), 10., true, false);
+  const Region rc = circle(Point(50., 100.), 10., true, false);
   const Image vs = vertical_stripe(100, Colors::Caribbean_blue, Colors::red);
-  // const Blend cb = constant<Fraction>(.42);
+  const Blend cb = constant<Fraction>(.42);
 
   create_BMP("constant.bmp",
              width,
@@ -44,47 +44,47 @@ main()
              width,
              height,
              circle(Point(50., 100.), 10., Colors::Caribbean_blue, Colors::red));
-  // create_BMP("checker.bmp",
-  //            width,
-  //            height,
-  //            checker(10., Colors::Caribbean_blue, Colors::blue));
-  // create_BMP("polar_checker.bmp",
-  //            width,
-  //            height,
-  //            polar_checker(10., 4, Colors::Caribbean_blue, Colors::blue));
-  // create_BMP("rings.bmp",
-  //            width,
-  //            height,
-  //            rings(Point(50., 100.), 10., Colors::Caribbean_blue, Colors::blue));
-  // create_BMP("vertical_stripe.bmp",
-  //            width,
-  //            height,
-  //            vs);
-  // create_BMP("cond.bmp",
-  //            width,
-  //            height,
-  //            cond(rc, constant(Colors::Caribbean_blue), constant(Colors::blue)));
-  // create_BMP("lerp.bmp",
-  //            width,
-  //            height,
-  //            lerp(cb, constant(Colors::blue), constant(Colors::white)));
-  // create_BMP("dark_vs.bmp",
-  //            width,
-  //            height,
-  //            darken(vs, cb));
-  // create_BMP("light_vs.bmp",
-  //            width,
-  //            height,
-  //            lighten(vs, cb));
+  create_BMP("checker.bmp",
+             width,
+             height,
+             checker(10., Colors::Caribbean_blue, Colors::blue));
+  create_BMP("polar_checker.bmp",
+             width,
+             height,
+             polar_checker(10., 4, Colors::Caribbean_blue, Colors::blue));
+  create_BMP("rings.bmp",
+             width,
+             height,
+             rings(Point(50., 100.), 10., Colors::Caribbean_blue, Colors::red));
+  create_BMP("vertical_stripe.bmp",
+             width,
+             height,
+             vs);
+  create_BMP("cond.bmp",
+             width,
+             height,
+             cond(rc, constant(Colors::Caribbean_blue), constant(Colors::blue)));
+  create_BMP("lerp.bmp",
+             width,
+             height,
+             lerp(cb, constant(Colors::blue), constant(Colors::white)));
+  create_BMP("dark_vs.bmp",
+             width,
+             height,
+             darken(vs, cb));
+  create_BMP("light_vs.bmp",
+             width,
+             height,
+             lighten(vs, cb));
 
-  // assert(compose()(42) == 42);
+  assert(compose()(42) == 42);
   // assert(compose([](auto x) { return x + 1; },
   //                [](auto x) { return x * x; })(1) == 4);
 
-  // const auto h1 = [](auto a, auto b) { auto g = a * b; return g; };
-  // const auto h2 = [](auto a, auto b) { auto g = a + b; return g; };
-  // const auto f1 = [](auto p) { auto a = p; return a; };
-  // const auto f2 = [](auto p) { auto b = p; return b; };
-  // assert(lift(h1, f1, f2)(42) == 42 * 42);
-  // assert(lift(h2, f1, f2)(42) == 42 + 42);
+  const auto h1 = [](auto a, auto b) { auto g = a * b; return g; };
+  const auto h2 = [](auto a, auto b) { auto g = a + b; return g; };
+  const auto f1 = [](auto p) { auto a = p; return a; };
+  const auto f2 = [](auto p) { auto b = p; return b; };
+  assert(lift(h1, f1, f2)(42) == 42 * 42);
+  assert(lift(h2, f1, f2)(42) == 42 + 42);
 }
