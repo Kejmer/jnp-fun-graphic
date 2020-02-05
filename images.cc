@@ -1,27 +1,25 @@
 #include "images.h"
-#include "functional"
-
-template<>
-Base_image<Fraction> constant(Fraction f) {
-  assert(0 <= f && f <= 1);
-  return [f](const Point p) {
-    (void)p;
-    return f;
-  };
-}
 
 Image cond(Region region, Image this_way, Image that_way) {
-  return [=](const Point p) {
-    if (region(p))
-      return this_way(p);
-    return that_way(p);
-  };
+  return lift(
+    [](bool b, Color c1, Color c2) {
+      return b ? c1 : c2;
+    },
+    region,
+    this_way,
+    that_way
+  );
 }
 
 Image lerp(Blend blend, Image this_way, Image that_way) {
-  return [=](const Point p) {
-    return this_way(p).weighted_mean(that_way(p), blend(p));
-  };
+  return lift(
+    [](Fraction f, Color c1, Color c2) {
+      return c1.weighted_mean(c2, f);
+    },
+    blend,
+    this_way,
+    that_way
+  );
 }
 
 Image darken(Image image, Blend blend) {

@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <cassert>
+#include "functional.h"
 #include "coordinate.h"
 #include "color.h"
 
@@ -18,83 +19,102 @@ using Blend = Base_image<Fraction>;
 
 template<typename T>
 Base_image<T> constant(T t) {
-  return [=](const Point p) {
-    return t;
-    (void)p;
-  };
+  return compose(
+    [=](const Point p) {
+      return t;
+      (void)p;
+    }
+  );
 }
 
 template<typename T>
 Base_image<T> rotate(Base_image<T> image, double phi) {
-  return [=](const Point p) {
-    Point np = p.is_polar ? p : to_polar(p);
-    return image(Point(np.first, np.second - phi, np.is_polar));
-  };
+  return compose(
+    to_polar,
+    [=](const Point p) {
+      return image(Point(p.first, p.second - phi, true));
+    }
+  );
 }
 
 template<typename T>
 Base_image<T> translate(Base_image<T> image, Vector v) {
-  return [=](const Point p) {
-    Point np = p.is_polar ? from_polar(p) : p;
-    return image(Point(np.first + v.first, np.second + v.second, np.is_polar));
-  };
+  return compose(
+    [=](const Point p) {
+      return Point(p.first + v.first, p.second + v.second);
+    },
+    image
+  );
 }
 
 template<typename T>
 Base_image<T> scale(Base_image<T> image, double s) {
-  return [=](const Point p) {
-    Point np = p.is_polar ? p : to_polar(p);
-    return image(Point(np.first / s, np.second, np.is_polar));
-  };
+  return compose(
+    to_polar,
+    [s](const Point p) {
+      return Point(p.first / s, p.second, true);
+    },
+    from_polar,
+    image
+  );
 }
 
 template<typename T>
 Base_image<T> circle(Point q, double r, T inner, T outer) {
-  return [=](const Point p) {
-    Point np = p.is_polar ? from_polar(p) : p;
-    if (distance(np, q) <= r)
-      return inner;
-    return outer;
-  };
+  // return lift(
+  //   [](auto b, auto c1, auto c2) {
+  //     return b ? c1 : c2;
+  //   },
+  //   [q, r](const Point p) {
+  //     return distance(p, q) <= r;
+  //   },
+  //   inner,
+  //   outer
+  // );
+  return compose(
+    [=](const Point p) {
+      return distance(p, q) <= r ? inner : outer;
+    }
+  );
 }
 
 template<typename T>
 Base_image<T> checker(double d, T this_way, T that_way) {
-  return [=](const Point p) {
-    Point np = p.is_polar ? from_polar(p) : p;
-    if (static_cast<int>(floor(np.first / d) + floor(np.second / d)) % 2)
-      return that_way;
-    return this_way;
-  };
+  return compose(
+    [=](const Point p) {
+      return static_cast<int>(floor(p.first / d) + floor(p.second / d)) % 2 ? that_way : this_way;
+    }
+  );
 }
 
 template<typename T>
 Base_image<T> polar_checker(double d, int n, T this_way, T that_way) {
   assert(n);
-  return [=](const Point p) {
-    Point np = p.is_polar ? p : to_polar(p);
-    return checker(d, this_way, that_way)(Point(np.first, np.second * static_cast<double>(n) * d /(2 * M_PI), !np.is_polar));
-  };
+  return compose(
+    to_polar,
+    [=](const Point p) {
+      return Point(p.first, p.second * static_cast<double>(n) * d /(2 * M_PI), true);
+    },
+    checker(d, this_way, that_way)
+  );
 }
 
 template <typename T>
 Base_image<T> rings(Point q, double d, T this_way, T that_way) {
-  return [=](const Point p) {
-    Point np = p.is_polar ? from_polar(p) : p;
-    if (static_cast<int>(distance(np, q) / d) % 2)
-      return that_way;
-    return this_way;
-  };
+  return compose(
+    [=](const Point p) {
+      return static_cast<int>(distance(p, q) / d) % 2 ? that_way : this_way;
+    }
+  );
 }
 
 template <typename T>
 Base_image<T> vertical_stripe(double d, T this_way, T that_way) {
-  return [=](const Point p) {
-    Point np = p.is_polar ? from_polar(p) : p;
-    if (abs(np.first)*2 <= d)
-      return this_way;
-    return that_way;
-  };
+  return compose(
+    [=](const Point p) {
+      return abs(p.first) * 2 <= d ? this_way : that_way;
+    }
+  );
 }
 
 Image cond(Region region, Image this_way, Image that_way);

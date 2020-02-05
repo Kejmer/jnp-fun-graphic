@@ -63,11 +63,11 @@ main()
   create_BMP("cond.bmp",
              width,
              height,
-             cond(rc, constant(Colors::Caribbean_blue), constant(Colors::blue)));
+             cond(rc, constant(Colors::Caribbean_blue), constant(Colors::green)));
   create_BMP("lerp.bmp",
              width,
              height,
-             lerp(cb, constant(Colors::blue), constant(Colors::white)));
+             lerp(cb, constant(Colors::blue), constant(Colors::green)));
   create_BMP("dark_vs.bmp",
              width,
              height,
@@ -77,9 +77,21 @@ main()
              height,
              lighten(vs, cb));
 
+  const Region kula1 = circle(Point(70., -120.), 30., true, false);
+  const Region kula2 = circle(Point(-70., -120.), 30., true, false);
+  const Image kolon = constant(Colors::green.weighted_mean(Colors::Caribbean_blue, .45));
+  const Image kulen = cond(kula1, kolon, cond(kula2, kolon, constant(Colors::black)));
+  const Region dron = vertical_stripe(100, true, false);
+  const Image megazord = cond(dron, constant(Colors::green.weighted_mean(Colors::Caribbean_blue, .65)), kulen);
+
+  create_BMP("diks.bmp",
+              width,
+              height,
+              megazord);
+
   assert(compose()(42) == 42);
-  // assert(compose([](auto x) { return x + 1; },
-  //                [](auto x) { return x * x; })(1) == 4);
+  assert(compose([](auto x) { return x + 1; },
+                 [](auto x) { return x * x; })(1) == 4);
 
   const auto h1 = [](auto a, auto b) { auto g = a * b; return g; };
   const auto h2 = [](auto a, auto b) { auto g = a + b; return g; };

@@ -1,17 +1,17 @@
 #ifndef JNP_FUNCTIONAL_H
 #define JNP_FUNCTIONAL_H
 
+template <typename... Args>
+auto compose(Args... args) {
+  return [](auto x) {
+    return x;
+  };
+}
 
 template <typename F, typename... Args>
 auto compose(F f, Args... args) {
   return [=](auto x) {
     return compose(args...)(f(x));
-  };
-}
-
-auto compose() {
-  return [](auto x) {
-    return x;
   };
 }
 
@@ -23,4 +23,4 @@ auto lift(H h,Args... args) {
 }
 
 
-#endif
+#endif /*JNP_FUNCTIONAL_H */
