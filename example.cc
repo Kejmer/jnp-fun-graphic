@@ -55,7 +55,7 @@ main()
   create_BMP("rings.bmp",
              width,
              height,
-             rings(Point(50., 100.), 10., Colors::Caribbean_blue, Colors::red));
+             rings(Point(50., 100.), 90., Colors::Caribbean_blue, Colors::blue));
   create_BMP("vertical_stripe.bmp",
              width,
              height,
@@ -67,7 +67,7 @@ main()
   create_BMP("lerp.bmp",
              width,
              height,
-             lerp(cb, constant(Colors::blue), constant(Colors::green)));
+             lerp(cb, constant(Colors::blue), constant(Colors::white)));
   create_BMP("dark_vs.bmp",
              width,
              height,
@@ -77,17 +77,7 @@ main()
              height,
              lighten(vs, cb));
 
-  const Region kula1 = circle(Point(70., -120.), 30., true, false);
-  const Region kula2 = circle(Point(-70., -120.), 30., true, false);
-  const Image kolon = constant(Colors::green.weighted_mean(Colors::Caribbean_blue, .45));
-  const Image kulen = cond(kula1, kolon, cond(kula2, kolon, constant(Colors::black)));
-  const Region dron = vertical_stripe(100, true, false);
-  const Image megazord = cond(dron, constant(Colors::green.weighted_mean(Colors::Caribbean_blue, .65)), kulen);
 
-  create_BMP("diks.bmp",
-              width,
-              height,
-              megazord);
 
   assert(compose()(42) == 42);
   assert(compose([](auto x) { return x + 1; },
